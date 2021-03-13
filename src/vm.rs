@@ -128,8 +128,11 @@ impl VM {
     }
 
     // CALL addr
-    fn process_opcode_2nnn(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_2nnn(&mut self, opcode: u16) {
+        self.regs.pc += 2;
+        self.regs.sp -= 1;
+        self.stack[self.regs.sp as usize] = self.regs.pc;
+        self.regs.pc = opcode & 0x0fff;
     }
 
     // SE Vx, byte
@@ -429,9 +432,24 @@ mod tests {
 
         assert_eq!(vm.regs.pc, INITIAL_PC);
 
-        vm.write_u16(vm.regs.pc as usize, 0x1123);
+        vm.write_u16(vm.regs.pc as usize, 0x1123); // JP 0x123
         vm.step();
 
         assert_eq!(vm.regs.pc, 0x0123);
+    }
+
+    #[test]
+    fn opcode_2nnn() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.sp, STACK_SIZE as u16);
+
+        vm.write_u16(vm.regs.pc as usize, 0x2123); // CALL 0x123
+        vm.step();
+
+        assert_eq!(vm.regs.pc, 0x0123);
+        assert_eq!(vm.regs.sp, (STACK_SIZE - 1) as u16);
+        assert_eq!(vm.stack[vm.regs.sp as usize], INITIAL_PC + 2);
     }
 }
