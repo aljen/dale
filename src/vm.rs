@@ -292,8 +292,9 @@ impl VM {
     }
 
     // LD I, addr
-    fn process_opcode_annn(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_annn(&mut self, opcode: u16) {
+        self.regs.pc += 2;
+        self.regs.i = opcode & 0x0fff;
     }
 
     // JP V0, addr
@@ -829,5 +830,19 @@ mod tests {
         vm.step();
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 6);
+    }
+
+    #[test]
+    fn opcode_annn() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.i, 0);
+
+        vm.write_u16(vm.regs.pc as usize, 0xa123); // LD I, 0x123
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.i, 0x123);
     }
 }
