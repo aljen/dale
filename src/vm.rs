@@ -160,8 +160,15 @@ impl VM {
     }
 
     // SE Vx, Vy
-    fn process_opcode_5xy0(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_5xy0(&mut self, opcode: u16) {
+        let x: u8 = ((opcode >> 8) & 0x000f) as u8;
+        let y: u8 = ((opcode >> 4) & 0x000f) as u8;
+
+        self.regs.pc += 2;
+
+        if self.regs.v[x as usize] == self.regs.v[y as usize] {
+            self.regs.pc += 2;
+        }
     }
 
     // LD Vx, byte
@@ -500,6 +507,25 @@ mod tests {
         vm.regs.v[1] = 0x23;
 
         vm.write_u16(vm.regs.pc as usize, 0x4123); // SNE V1, 0x23
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 6);
+    }
+
+    #[test]
+    fn opcode_5xy0() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+
+        vm.write_u16(vm.regs.pc as usize, 0x5120); // SE V1, V2
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 4);
+
+        vm.regs.v[1] = 0x23;
+
+        vm.write_u16(vm.regs.pc as usize, 0x5120); // SE V1, V2
         vm.step();
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 6);
