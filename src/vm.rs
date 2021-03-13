@@ -1,7 +1,6 @@
 pub const MEMORY_SIZE: usize = 4096;
-pub const STACK_SIZE: usize = 128;
+pub const STACK_SIZE: usize = 16;
 pub const V_REG_SIZE: usize = 16;
-
 pub const INITIAL_PC: u16 = 0x200;
 
 pub struct Registers {
@@ -24,7 +23,7 @@ impl Registers {
         self.v.fill(0);
         self.i = 0;
         self.pc = INITIAL_PC;
-        self.sp = 0;
+        self.sp = STACK_SIZE as u16;
         self.delay_timer = 0;
         self.sound_timer = 0;
     }
@@ -39,7 +38,7 @@ impl VM {
                 v: [0; V_REG_SIZE],
                 i: 0,
                 pc: INITIAL_PC,
-                sp: 0,
+                sp: STACK_SIZE as u16,
                 delay_timer: 0,
                 sound_timer: 0,
             },
@@ -344,7 +343,7 @@ mod tests {
         assert_eq!(vm.regs.v, [0; V_REG_SIZE]);
         assert_eq!(vm.regs.i, 0);
         assert_eq!(vm.regs.pc, INITIAL_PC);
-        assert_eq!(vm.regs.sp, 0);
+        assert_eq!(vm.regs.sp, STACK_SIZE as u16);
         assert_eq!(vm.regs.delay_timer, 0);
         assert_eq!(vm.regs.sound_timer, 0);
     }
@@ -369,7 +368,7 @@ mod tests {
         assert_eq!(vm.regs.v, [0; V_REG_SIZE]);
         assert_eq!(vm.regs.i, 0);
         assert_eq!(vm.regs.pc, INITIAL_PC);
-        assert_eq!(vm.regs.sp, 0);
+        assert_eq!(vm.regs.sp, STACK_SIZE as u16);
         assert_eq!(vm.regs.delay_timer, 0);
         assert_eq!(vm.regs.sound_timer, 0);
     }
