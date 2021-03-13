@@ -51,6 +51,23 @@ impl VM {
         self.stack.fill(0);
         self.regs.reset();
     }
+
+    pub fn read_u16(&self, address: usize) -> u16 {
+        ((self.memory[address] as u16) << 8) | self.memory[address + 1] as u16
+    }
+
+    pub fn read_u8(&self, address: usize) -> u8 {
+        self.memory[address]
+    }
+
+    pub fn write_u16(&mut self, address: usize, value: u16) {
+        self.memory[address] = (value >> 8) as u8;
+        self.memory[address + 1] = (value & 0xff) as u8;
+    }
+
+    pub fn write_u8(&mut self, address: usize, value: u8) {
+        self.memory[address] = value;
+    }
 }
 
 #[cfg(test)]
@@ -93,5 +110,55 @@ mod tests {
         assert_eq!(vm.regs.sp, 0);
         assert_eq!(vm.regs.delay_timer, 0);
         assert_eq!(vm.regs.sound_timer, 0);
+    }
+
+    #[test]
+    fn memory_read_u16() {
+        let mut vm = VM::new();
+
+        let address: usize = 10;
+
+        vm.memory[address] = 0xaa;
+        vm.memory[address + 1] = 0xbb;
+
+        let read = vm.read_u16(address);
+
+        assert_eq!(read, 0xaabb);
+    }
+
+    #[test]
+    fn memory_read_u8() {
+        let mut vm = VM::new();
+
+        let address: usize = 10;
+
+        vm.memory[address] = 0xaa;
+
+        let read = vm.read_u8(address);
+
+        assert_eq!(read, 0xaa);
+    }
+
+    #[test]
+    fn memory_write_u16() {
+        let mut vm = VM::new();
+
+        let address: usize = 10;
+
+        vm.write_u16(address, 0xaabb);
+
+        assert_eq!(vm.memory[address], 0xaa);
+        assert_eq!(vm.memory[address + 1], 0xbb);
+    }
+
+    #[test]
+    fn memory_write_u8() {
+        let mut vm = VM::new();
+
+        let address: usize = 10;
+
+        vm.write_u8(address, 0xaa);
+
+        assert_eq!(vm.memory[address], 0xaa);
     }
 }
