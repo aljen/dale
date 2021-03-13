@@ -9,6 +9,8 @@ pub struct Registers {
     pub i: u16,
     pub pc: u16,
     pub sp: u16,
+    pub delay_timer: u8,
+    pub sound_timer: u8,
 }
 
 pub struct VM {
@@ -23,6 +25,8 @@ impl Registers {
         self.i = 0;
         self.pc = INITIAL_PC;
         self.sp = 0;
+        self.delay_timer = 0;
+        self.sound_timer = 0;
     }
 }
 
@@ -36,6 +40,8 @@ impl VM {
                 i: 0,
                 pc: INITIAL_PC,
                 sp: 0,
+                delay_timer: 0,
+                sound_timer: 0,
             },
         }
     }
@@ -60,6 +66,8 @@ mod tests {
         assert_eq!(vm.regs.i, 0);
         assert_eq!(vm.regs.pc, INITIAL_PC);
         assert_eq!(vm.regs.sp, 0);
+        assert_eq!(vm.regs.delay_timer, 0);
+        assert_eq!(vm.regs.sound_timer, 0);
     }
 
     #[test]
@@ -72,6 +80,8 @@ mod tests {
         vm.regs.i = 1;
         vm.regs.pc = 1;
         vm.regs.sp = 1;
+        vm.regs.delay_timer = 1;
+        vm.regs.sound_timer = 1;
 
         vm.reset();
 
@@ -81,5 +91,7 @@ mod tests {
         assert_eq!(vm.regs.i, 0);
         assert_eq!(vm.regs.pc, INITIAL_PC);
         assert_eq!(vm.regs.sp, 0);
+        assert_eq!(vm.regs.delay_timer, 0);
+        assert_eq!(vm.regs.sound_timer, 0);
     }
 }
