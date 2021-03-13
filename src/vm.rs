@@ -181,8 +181,12 @@ impl VM {
     }
 
     // ADD Vx, byte
-    fn process_opcode_7xkk(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_7xkk(&mut self, opcode: u16) {
+        let x: u8 = ((opcode >> 8) & 0x000f) as u8;
+        let kk: u8 = (opcode & 0x00ff) as u8;
+
+        self.regs.pc += 2;
+        self.regs.v[x as usize] += kk;
     }
 
     fn process_opcode_8(&mut self, opcode: u16) {
@@ -547,5 +551,20 @@ mod tests {
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 2);
         assert_eq!(vm.regs.v[1], 0x23);
+    }
+
+    #[test]
+    fn opcode_7xkk() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[1], 0x00);
+
+        vm.regs.v[1] = 0x01;
+        vm.write_u16(vm.regs.pc as usize, 0x7123); // ADD V1, 0x23
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.v[1], 0x24);
     }
 }
