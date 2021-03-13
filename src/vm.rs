@@ -227,8 +227,9 @@ impl VM {
     }
 
     // XOR Vx, Vy
-    fn process_opcode_8xy3(&mut self, _x: u8, _y: u8) {
-        unimplemented!();
+    fn process_opcode_8xy3(&mut self, x: u8, y: u8) {
+        self.regs.pc += 2;
+        self.regs.v[x as usize] = self.regs.v[x as usize] ^ self.regs.v[y as usize];
     }
 
     // ADD Vx, Vy
@@ -621,6 +622,24 @@ mod tests {
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 2);
         assert_eq!(vm.regs.v[1], 0x02);
+        assert_eq!(vm.regs.v[2], 0x23);
+    }
+
+    #[test]
+    fn opcode_8xy3() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[1], 0x00);
+        assert_eq!(vm.regs.v[2], 0x00);
+
+        vm.regs.v[1] = 0x12;
+        vm.regs.v[2] = 0x23;
+        vm.write_u16(vm.regs.pc as usize, 0x8123); // XOR V1, V2
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.v[1], 0x31);
         assert_eq!(vm.regs.v[2], 0x23);
     }
 }
