@@ -12,9 +12,9 @@ pub struct Registers {
 }
 
 pub struct VM {
-    memory: [u8; MEMORY_SIZE],
-    stack: [u16; STACK_SIZE],
-    regs: Registers,
+    pub memory: [u8; MEMORY_SIZE],
+    pub stack: [u16; STACK_SIZE],
+    pub regs: Registers,
 }
 
 impl Registers {
