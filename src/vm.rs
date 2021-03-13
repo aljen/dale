@@ -2,6 +2,8 @@ pub const MEMORY_SIZE: usize = 4096;
 pub const STACK_SIZE: usize = 128;
 pub const V_REG_SIZE: usize = 16;
 
+pub const INITIAL_PC: u16 = 0x200;
+
 pub struct Registers {
     pub v: [u8; V_REG_SIZE],
     pub i: u16,
@@ -19,7 +21,7 @@ impl Registers {
     pub fn reset(&mut self) {
         self.v.fill(0);
         self.i = 0;
-        self.pc = 0;
+        self.pc = INITIAL_PC;
         self.sp = 0;
     }
 }
@@ -32,7 +34,7 @@ impl VM {
             regs: Registers {
                 v: [0; V_REG_SIZE],
                 i: 0,
-                pc: 0,
+                pc: INITIAL_PC,
                 sp: 0,
             },
         }
@@ -56,7 +58,7 @@ mod tests {
         assert_eq!(vm.stack, [0; STACK_SIZE]);
         assert_eq!(vm.regs.v, [0; V_REG_SIZE]);
         assert_eq!(vm.regs.i, 0);
-        assert_eq!(vm.regs.pc, 0);
+        assert_eq!(vm.regs.pc, INITIAL_PC);
         assert_eq!(vm.regs.sp, 0);
     }
 
@@ -77,7 +79,7 @@ mod tests {
         assert_eq!(vm.stack, [0; STACK_SIZE]);
         assert_eq!(vm.regs.v, [0; V_REG_SIZE]);
         assert_eq!(vm.regs.i, 0);
-        assert_eq!(vm.regs.pc, 0);
+        assert_eq!(vm.regs.pc, INITIAL_PC);
         assert_eq!(vm.regs.sp, 0);
     }
 }
