@@ -242,8 +242,15 @@ impl VM {
     }
 
     // SUB Vx, Vy
-    fn process_opcode_8xy5(&mut self, _x: u8, _y: u8) {
-        unimplemented!();
+    fn process_opcode_8xy5(&mut self, x: u8, y: u8) {
+        self.regs.pc += 2;
+        self.regs.v[0xf] = if self.regs.v[x as usize] > self.regs.v[y as usize] {
+            1
+        } else {
+            0
+        };
+        self.regs.v[x as usize] =
+            (self.regs.v[x as usize] as i8 - self.regs.v[y as usize] as i8) as u8;
     }
 
     // SHR Vx {, Vy}
@@ -673,6 +680,36 @@ mod tests {
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 4);
         assert_eq!(vm.regs.v[0x1], 4);
+        assert_eq!(vm.regs.v[0x2], 5);
+        assert_eq!(vm.regs.v[0xf], 1);
+    }
+
+    #[test]
+    fn opcode_8xy5() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[0x1], 0);
+        assert_eq!(vm.regs.v[0x2], 0);
+        assert_eq!(vm.regs.v[0xf], 0);
+
+        vm.regs.v[1] = 5;
+        vm.regs.v[2] = 10;
+        vm.write_u16(vm.regs.pc as usize, 0x8125); // SUB V1, V2
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.v[0x1], 251);
+        assert_eq!(vm.regs.v[0x2], 10);
+        assert_eq!(vm.regs.v[0xf], 0);
+
+        vm.regs.v[1] = 10;
+        vm.regs.v[2] = 5;
+        vm.write_u16(vm.regs.pc as usize, 0x8125); // SUB V1, V2
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 4);
+        assert_eq!(vm.regs.v[0x1], 5);
         assert_eq!(vm.regs.v[0x2], 5);
         assert_eq!(vm.regs.v[0xf], 1);
     }
