@@ -298,8 +298,8 @@ impl VM {
     }
 
     // JP V0, addr
-    fn process_opcode_bnnn(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_bnnn(&mut self, opcode: u16) {
+        self.regs.pc = self.regs.v[0] as u16 + (opcode & 0x0fff);
     }
 
     // RND Vx, byte
@@ -844,5 +844,21 @@ mod tests {
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 2);
         assert_eq!(vm.regs.i, 0x123);
+    }
+
+    #[test]
+    fn opcode_bnnn() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[0], 0);
+
+        vm.regs.v[0] = 1;
+
+        vm.write_u16(vm.regs.pc as usize, 0xb012); // JP V0, 0x12
+        vm.step();
+
+        assert_eq!(vm.regs.pc, 0x13);
+        assert_eq!(vm.regs.v[0], 1);
     }
 }
