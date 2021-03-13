@@ -124,8 +124,8 @@ impl VM {
     }
 
     // JP addr
-    fn process_opcode_1nnn(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_1nnn(&mut self, opcode: u16) {
+        self.regs.pc = opcode & 0x0fff;
     }
 
     // CALL addr
@@ -422,5 +422,17 @@ mod tests {
         vm.write_u8(address, 0xaa);
 
         assert_eq!(vm.memory[address], 0xaa);
+    }
+
+    #[test]
+    fn opcode_1nnn() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+
+        vm.write_u16(vm.regs.pc as usize, 0x1123);
+        vm.step();
+
+        assert_eq!(vm.regs.pc, 0x0123);
     }
 }
