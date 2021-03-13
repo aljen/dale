@@ -148,8 +148,15 @@ impl VM {
     }
 
     // SNE Vx, byte
-    fn process_opcode_4xkk(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_4xkk(&mut self, opcode: u16) {
+        let x: u8 = ((opcode >> 8) & 0x000f) as u8;
+        let kk: u8 = (opcode & 0x00ff) as u8;
+
+        self.regs.pc += 2;
+
+        if self.regs.v[x as usize] != kk {
+            self.regs.pc += 2;
+        }
     }
 
     // SE Vx, Vy
@@ -474,6 +481,25 @@ mod tests {
         vm.regs.v[1] = 0x23;
 
         vm.write_u16(vm.regs.pc as usize, 0x3123); // SE V1, 0x23
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 6);
+    }
+
+    #[test]
+    fn opcode_4xkk() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+
+        vm.write_u16(vm.regs.pc as usize, 0x4123); // SNE V1, 0x23
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 4);
+
+        vm.regs.v[1] = 0x23;
+
+        vm.write_u16(vm.regs.pc as usize, 0x4123); // SNE V1, 0x23
         vm.step();
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 6);
