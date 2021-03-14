@@ -72,6 +72,17 @@ impl VM {
         self.memory[address] = value;
     }
 
+    pub fn load_rom(&mut self, filename: &str) {
+        let bytes = std::fs::read(filename).unwrap();
+
+        self.reset();
+
+        let pc = self.regs.pc as usize;
+        for i in 0..bytes.len() {
+            self.memory[pc + i] = bytes[i];
+        }
+    }
+
     pub fn step(&mut self) {
         let opcode = self.read_u16(self.regs.pc as usize);
         self.process_opcode(opcode);
