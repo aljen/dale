@@ -1,3 +1,5 @@
+use rand::{Rng, SeedableRng};
+
 pub const MEMORY_SIZE: usize = 4096;
 pub const STACK_SIZE: usize = 16;
 pub const V_REG_SIZE: usize = 16;
@@ -16,6 +18,7 @@ pub struct VM {
     pub memory: [u8; MEMORY_SIZE],
     pub stack: [u16; STACK_SIZE],
     pub regs: Registers,
+    pub random: rand_chacha::ChaCha8Rng,
 }
 
 impl Registers {
@@ -42,6 +45,7 @@ impl VM {
                 delay_timer: 0,
                 sound_timer: 0,
             },
+            random: rand_chacha::ChaCha8Rng::seed_from_u64(0),
         }
     }
 
