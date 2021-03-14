@@ -360,8 +360,9 @@ impl VM {
     }
 
     // LD Vx, DT
-    fn process_opcode_fx07(&mut self, _x: u8) {
-        unimplemented!();
+    fn process_opcode_fx07(&mut self, x: u8) {
+        self.regs.pc += 2;
+        self.regs.v[x as usize] = self.regs.delay_timer;
     }
 
     // LD Vx, K
@@ -882,5 +883,22 @@ mod tests {
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 2);
         assert_eq!(vm.regs.v[0], 0x20);
+    }
+
+    #[test]
+    fn opcode_fx07() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[0], 0);
+        assert_eq!(vm.regs.delay_timer, 0);
+
+        vm.regs.delay_timer = 1;
+        vm.write_u16(vm.regs.pc as usize, 0xf007); // LD V0, DT
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.v[0], 1);
+        assert_eq!(vm.regs.delay_timer, 1);
     }
 }
