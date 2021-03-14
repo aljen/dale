@@ -79,7 +79,7 @@ impl VM {
 
     pub fn process_opcode(&mut self, opcode: u16) {
         let op = (opcode >> 12) as u8;
-        println!("opcode: {:#06x} op: {:#04x}", opcode, op);
+        // println!("opcode: {:#06x} op: {:#04x}", opcode, op);
 
         match op {
             0x0 => self.process_opcode_0(opcode),
@@ -113,17 +113,17 @@ impl VM {
 
     // CLS
     fn process_opcode_00e0(&mut self) {
-        unimplemented!();
+        unimplemented!("opcode_00e0");
     }
 
     // RET
     fn process_opcode_00ee(&mut self) {
-        unimplemented!();
+        unimplemented!("opcode_00ee");
     }
 
     // SYS addr
     fn process_opcode_0nnn(&mut self, _opcode: u16) {
-        unimplemented!();
+        unimplemented!("opcode_0nnn");
     }
 
     // JP addr
@@ -316,8 +316,8 @@ impl VM {
     }
 
     // DRW Vx, Vy, nibble
-    fn process_opcode_dxyn(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_dxyn(&mut self, opcode: u16) {
+        unimplemented!("opcode_{}", opcode);
     }
 
     fn process_opcode_e(&mut self, opcode: u16) {
@@ -333,12 +333,12 @@ impl VM {
 
     // SKP Vx
     fn process_opcode_ex9e(&mut self, _x: u8) {
-        unimplemented!();
+        unimplemented!("opcode_ex9e");
     }
 
     // SKNP Vx
     fn process_opcode_exa1(&mut self, _x: u8) {
-        unimplemented!();
+        unimplemented!("opcode_exa1");
     }
 
     fn process_opcode_f(&mut self, opcode: u16) {
@@ -367,7 +367,7 @@ impl VM {
 
     // LD Vx, K
     fn process_opcode_fx0a(&mut self, _x: u8) {
-        unimplemented!();
+        unimplemented!("opcode_fx0a");
     }
 
     // LD DT, Vx
@@ -390,22 +390,22 @@ impl VM {
 
     // LD F, Vx
     fn process_opcode_fx29(&mut self, _x: u8) {
-        unimplemented!();
+        unimplemented!("opcode_fx29");
     }
 
     // LD B, Vx
     fn process_opcode_fx33(&mut self, _x: u8) {
-        unimplemented!();
+        unimplemented!("opcode_fx33");
     }
 
     // LD [I], Vx
-    fn process_opcode_fx55(&mut self, _x: u8) {
-        unimplemented!();
+    fn process_opcode_fx55(&mut self, x: u8) {
+        unimplemented!("opcode_fx55: {}", x);
     }
 
     // LD Vx, [I]
     fn process_opcode_fx65(&mut self, _x: u8) {
-        unimplemented!();
+        unimplemented!("opcode_fx65");
     }
 }
 
