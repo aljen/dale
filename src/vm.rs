@@ -383,8 +383,9 @@ impl VM {
     }
 
     // ADD I, Vx
-    fn process_opcode_fx1e(&mut self, _x: u8) {
-        unimplemented!();
+    fn process_opcode_fx1e(&mut self, x: u8) {
+        self.regs.pc += 2;
+        self.regs.i += self.regs.v[x as usize] as u16;
     }
 
     // LD F, Vx
@@ -936,5 +937,23 @@ mod tests {
         assert_eq!(vm.regs.pc, INITIAL_PC + 2);
         assert_eq!(vm.regs.v[0], 1);
         assert_eq!(vm.regs.sound_timer, 1);
+    }
+
+    #[test]
+    fn opcode_fx1e() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[0], 0);
+        assert_eq!(vm.regs.i, 0);
+
+        vm.regs.i = 1;
+        vm.regs.v[0] = 1;
+        vm.write_u16(vm.regs.pc as usize, 0xf01e); // ADD I, V0
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.i, 2);
+        assert_eq!(vm.regs.v[0], 1);
     }
 }
