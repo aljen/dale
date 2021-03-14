@@ -322,7 +322,7 @@ impl VM {
 
     fn process_opcode_e(&mut self, opcode: u16) {
         let x: u8 = ((opcode >> 8) & 0x000f) as u8;
-        let op: u8 = (opcode & 0x000f) as u8;
+        let op: u16 = (opcode & 0x00ff) as u16;
 
         match op {
             0x9e => self.process_opcode_ex9e(x),
@@ -343,7 +343,7 @@ impl VM {
 
     fn process_opcode_f(&mut self, opcode: u16) {
         let x: u8 = ((opcode >> 8) & 0x000f) as u8;
-        let op: u8 = (opcode & 0x000f) as u8;
+        let op: u16 = (opcode & 0x00ff) as u16;
 
         match op {
             0x07 => self.process_opcode_fx07(x),
