@@ -307,8 +307,12 @@ impl VM {
     }
 
     // RND Vx, byte
-    fn process_opcode_cxkk(&mut self, _opcode: u16) {
-        unimplemented!();
+    fn process_opcode_cxkk(&mut self, opcode: u16) {
+        let x: u8 = ((opcode >> 8) & 0x000f) as u8;
+        let kk: u8 = (opcode & 0x00ff) as u8;
+
+        self.regs.pc += 2;
+        self.regs.v[x as usize] = self.random.gen::<u8>() & kk;
     }
 
     // DRW Vx, Vy, nibble
@@ -864,5 +868,19 @@ mod tests {
 
         assert_eq!(vm.regs.pc, 0x13);
         assert_eq!(vm.regs.v[0], 1);
+    }
+
+    #[test]
+    fn opcode_cxkk() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.v[0], 0);
+
+        vm.write_u16(vm.regs.pc as usize, 0xc033); // RND V0, 0x33
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.v[0], 0x20);
     }
 }
