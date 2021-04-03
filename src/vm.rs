@@ -423,8 +423,14 @@ impl VM {
     }
 
     // LD Vx, [I]
-    fn process_opcode_fx65(&mut self, _x: u8) {
-        unimplemented!("opcode_fx65");
+    fn process_opcode_fx65(&mut self, x: u8) {
+        self.regs.pc += 2;
+
+        let address = self.regs.i as usize;
+
+        for i in 0..=x {
+            self.regs.v[i as usize] = self.memory[address + i as usize];
+        }
     }
 }
 
@@ -1010,6 +1016,42 @@ mod tests {
         vm.regs.v[2] = 3;
 
         vm.write_u16(vm.regs.pc as usize, 0xf355); // LD [I], Vx
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC + 2);
+        assert_eq!(vm.regs.i, i as u16);
+        assert_eq!(vm.regs.v[0], 1);
+        assert_eq!(vm.regs.v[1], 2);
+        assert_eq!(vm.regs.v[2], 3);
+        assert_eq!(vm.regs.v[3], 0);
+
+        assert_eq!(vm.memory[i], 1);
+        assert_eq!(vm.memory[i + 1], 2);
+        assert_eq!(vm.memory[i + 2], 3);
+        assert_eq!(vm.memory[i + 3], 0);
+    }
+
+    #[test]
+    fn opcode_fx65() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.i, 0);
+        assert_eq!(vm.regs.v[0], 0);
+        assert_eq!(vm.regs.v[1], 0);
+        assert_eq!(vm.regs.v[2], 0);
+        assert_eq!(vm.regs.v[3], 0);
+
+        let i: usize = 10;
+
+        vm.regs.i = i as u16;
+
+        vm.memory[i] = 1;
+        vm.memory[i + 1] = 2;
+        vm.memory[i + 2] = 3;
+        vm.memory[i + 3] = 0;
+
+        vm.write_u16(vm.regs.pc as usize, 0xf365); // LD Vx, [I]
         vm.step();
 
         assert_eq!(vm.regs.pc, INITIAL_PC + 2);
