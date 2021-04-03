@@ -129,7 +129,9 @@ impl VM {
 
     // RET
     fn process_opcode_00ee(&mut self) {
-        unimplemented!("opcode_00ee");
+        self.regs.pc = self.stack[self.regs.sp as usize];
+        self.stack[self.regs.sp as usize] = 0;
+        self.regs.sp += 1;
     }
 
     // SYS addr
@@ -510,6 +512,25 @@ mod tests {
         vm.write_u8(address, 0xaa);
 
         assert_eq!(vm.memory[address], 0xaa);
+    }
+
+    #[test]
+    fn opcode_00ee() {
+        let mut vm = VM::new();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+
+        let sp = vm.regs.sp - 1;
+        vm.regs.sp = sp;
+        vm.stack[vm.regs.sp as usize] = vm.regs.pc;
+        vm.regs.pc += 2;
+
+        vm.write_u16(vm.regs.pc as usize, 0x00ee); // RET
+        vm.step();
+
+        assert_eq!(vm.regs.pc, INITIAL_PC);
+        assert_eq!(vm.regs.sp, STACK_SIZE as u16);
+        assert_eq!(vm.stack[sp as usize], 0);
     }
 
     #[test]
